@@ -18,9 +18,9 @@ const TapesData: ReadonlyArray<TapeData> = [{
         description: "Addicted-2-Bass / Episode 109",
         audio: new URL("https://www.andremichelle.io/files/mixes/DeepSpaceRadio.mp3")
     }, {
-        name: "Meadow Minimal",
+        name: "Meadow",
         date: "May, 21st 2025",
-        description: "Melodic techno, balancing lush textures.",
+        description: "Melodic techno, lush textures.",
         audio: new URL("https://www.andremichelle.io/files/mixes/Meadow.mp3")
     }]
 
