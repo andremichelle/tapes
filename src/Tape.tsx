@@ -1,12 +1,18 @@
+import css from "./Tape.sass?inline"
 import {Arrays, Circle, clamp, Geom, Lifecycle, ObservableValue, ValueMapping} from "@opendaw/lib-std"
 import {createElement, Frag} from "@opendaw/lib-jsx"
-import {PPQN} from "@opendaw/lib-dsp"
+import {Html} from "@opendaw/lib-dom"
 
-const tapeVelocity = 26.0 / PPQN.Bar // TapeDeviceEditor speed 4.76 cm/s converted into svg coordinates
-const rEmpty = 15
-const rFull = 40
+const className = Html.adoptStyleSheet(css, "Tape")
+
+const cassetteWidthInCm = 10
+const cassetteWidthInPixels = 208
+const tapeSpeedInCmPerSecond = 4.76
+const tapeVelocity = cassetteWidthInPixels / tapeSpeedInCmPerSecond / cassetteWidthInCm
+const radiusEmpty = 15
+const radiusFull = 38
 const stroke = "var(--color-dark)"
-const mapping = ValueMapping.linear(rEmpty, rFull)
+const mapping = ValueMapping.linear(radiusEmpty, radiusFull)
 const reels: ReadonlyArray<Circle> = [{x: 56, y: 44, r: 0}, {x: 152, y: 44, r: 0}]
 const pins: ReadonlyArray<Readonly<Circle>> = [{x: 8, y: 104, r: 6}, {x: 200, y: 104, r: 6}]
 const tapePath = [reels[0], pins[0], pins[1], reels[1]]
@@ -36,7 +42,7 @@ export const Tape = ({lifecycle, position}: Construct) => {
         <rect x={100} y={106} width={8} height={2} stroke="none" fill="var(--color-dark)"/>
     )
     const tape: ReadonlyArray<SVGLineElement> = Arrays.create(() => <line stroke={stroke}/>, 3)
-    const total = PPQN.fromSignature(128, 1)
+    const total = 45 * 60
     const angles = [0.0, 0.0]
     let lastTime = 0.0
     let delta = 0.0
@@ -65,18 +71,17 @@ export const Tape = ({lifecycle, position}: Construct) => {
     }
     lifecycle.own(position.catchupAndSubscribe(observer))
     return (
-        <svg classList="tape" viewBox="0 0 208 112"
+        <svg classList={className} viewBox="0 0 208 112"
              width={208}
              height={112}
-             preserveAspectRatio="xMidYMid slice"
-             style={{width: "100%", height: "100%"}}>
+             preserveAspectRatio="xMidYMin meet">
             {reels.map(reel => (
                 <Frag>
-                    <circle cx={reel.x} cy={reel.y} r={(rEmpty + rFull) >> 1}
+                    <circle cx={reel.x} cy={reel.y} r={(radiusEmpty + radiusFull) >> 1}
                             fill="none"
                             stroke="hsl(200, 9%, 20%)"
-                            stroke-width={rFull - rEmpty}/>
-                    <circle cx={reel.x} cy={reel.y} r={rEmpty - 1} fill="none" stroke={"var(--color-blue)"}/>
+                            stroke-width={radiusFull - radiusEmpty}/>
+                    <circle cx={reel.x} cy={reel.y} r={radiusEmpty - 1} fill="none" stroke={"var(--color-blue)"}/>
                 </Frag>
             ))}
             {reelElements}
