@@ -1,7 +1,8 @@
 import css from "./Tape.sass?inline"
-import {Arrays, Circle, clamp, Geom, Lifecycle, ObservableValue, ValueMapping} from "@opendaw/lib-std"
+import {Arrays, Circle, clamp, Geom, Lifecycle, ValueMapping} from "@opendaw/lib-std"
 import {createElement, Frag} from "@opendaw/lib-jsx"
-import {Html} from "@opendaw/lib-dom"
+import {AnimationFrame, Events, Html} from "@opendaw/lib-dom"
+import {TapeData} from "./TapeData"
 
 const className = Html.adoptStyleSheet(css, "Tape")
 
@@ -31,10 +32,11 @@ const tapeReelHub = (): SVGPathElement => (
 
 export type Construct = {
     lifecycle: Lifecycle
-    position: ObservableValue<number>
+    data: TapeData
+    audio: HTMLAudioElement
 }
 
-export const Tape = ({lifecycle, position}: Construct) => {
+export const Tape = ({lifecycle, audio, data}: Construct) => {
     const reelHubs: ReadonlyArray<SVGGraphicsElement> = [tapeReelHub(), tapeReelHub()]
     const reelElements: ReadonlyArray<SVGCircleElement> = reels.map(reel =>
         (<circle cx={reel.x} cy={reel.y} r={0} fill="rgba(0,0,0,0.08)" stroke={stroke}/>))
@@ -42,12 +44,12 @@ export const Tape = ({lifecycle, position}: Construct) => {
         <rect x={100} y={106} width={8} height={2} stroke="none" fill="var(--color-dark)"/>
     )
     const tape: ReadonlyArray<SVGLineElement> = Arrays.create(() => <line stroke={stroke}/>, 3)
-    const total = 45 * 60
+    const total = data.duration
     const angles = [0.0, 0.0]
     let lastTime = 0.0
     let delta = 0.0
-    const observer = (owner: ObservableValue<number>) => {
-        const position = owner.getValue()
+    const observer = () => {
+        const position = audio.currentTime
         const elapsed = position - lastTime
         delta += elapsed
         const ratio = clamp(delta / total, 0.0, 1.0)
@@ -56,7 +58,8 @@ export const Tape = ({lifecycle, position}: Construct) => {
             const reel = reels[i]
             const radius = mapping.y(ratios[i])
             angles[i] += (elapsed * 360) * (tapeVelocity / radius)
-            reelHubs[i].setAttribute("transform", `translate(${reel.x}, ${reel.y}) rotate(${-angles[i] + i * 60.0})`)
+            reelHubs[i].setAttribute("transform",
+                `translate(${reel.x}, ${reel.y}) rotate(${-angles[i] + i * 60.0})`)
             reelElements[i].r.baseVal.value = reel.r = radius
         }
         for (let i = 0; i < tapePath.length - 1; i++) {
@@ -69,26 +72,69 @@ export const Tape = ({lifecycle, position}: Construct) => {
         }
         lastTime = position
     }
-    lifecycle.own(position.catchupAndSubscribe(observer))
+    observer()
+    const playButton: SVGSVGElement = (
+        <svg classList="play-button" viewBox="0 1 14 14" fill="currentColor"
+             width={14} height={14} transform="translate(96, 80)"
+             style={{cursor: "pointer", pointerEvents: "all"}}>
+            <path
+                d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267z"/>
+        </svg>
+    )
+    lifecycle.ownAll(
+        Events.subscribe(playButton, "click", () => {
+            if (audio.paused) {
+                audio.play().then()
+            } else {
+                audio.pause()
+            }
+        }),
+        Events.subscribe(audio, "play", () => playButton.classList.add("playing")),
+        Events.subscribe(audio, "pause", () => playButton.classList.remove("playing")),
+        Events.subscribe(audio, "ended", () => playButton.classList.remove("playing")),
+        AnimationFrame.add(observer)
+    )
     return (
         <svg classList={className} viewBox="0 0 208 112"
              width={208}
              height={112}
              preserveAspectRatio="xMidYMin meet">
-            {reels.map(reel => (
-                <Frag>
-                    <circle cx={reel.x} cy={reel.y} r={(radiusEmpty + radiusFull) >> 1}
-                            fill="none"
-                            stroke="hsl(200, 9%, 20%)"
-                            stroke-width={radiusFull - radiusEmpty}/>
-                    <circle cx={reel.x} cy={reel.y} r={radiusEmpty - 1} fill="none" stroke={"var(--color-blue)"}/>
-                </Frag>
-            ))}
+            {reels.map(reel => {
+                const background: SVGCircleElement = (
+                    <circle cx={reel.x} cy={reel.y} r={radiusFull} fill="none" stroke="none"
+                            style={{pointerEvents: "all"}}/>
+                )
+                const listener = ({clientX, clientY, buttons}: PointerEvent) => {
+                    if (buttons === 0) {return}
+                    const {x, y, width} = background.getBoundingClientRect()
+                    const scale = (width / 2) / radiusFull
+                    const dx = clientX - (x + width / 2)
+                    const dy = clientY - (y + width / 2)
+                    const dd = Math.sqrt(dx * dx + dy * dy)
+                    const ratio = (dd / scale - radiusEmpty) / (radiusFull - radiusEmpty)
+                    audio.currentTime = clamp(ratio, 0.0, 1.0) * total
+                }
+                lifecycle.ownAll(
+                    Events.subscribe(background, "pointerdown", listener),
+                    Events.subscribe(background, "pointermove", listener)
+                )
+                return (
+                    <Frag>
+                        <circle cx={reel.x} cy={reel.y} r={radiusEmpty + radiusFull >> 1}
+                                fill="none"
+                                stroke="hsl(200, 9%, 20%)"
+                                stroke-width={(radiusFull - radiusEmpty + 1)}/>
+                        <circle cx={reel.x} cy={reel.y} r={radiusEmpty} fill="none" stroke={"var(--color-blue)"}/>
+                        {background}
+                    </Frag>
+                )
+            })}
             {reelElements}
             {reelHubs}
             {pins.map(({x, y, r}) => (<circle cx={x} cy={y} r={r} fill="none" stroke={stroke}/>))}
             {head}
             {tape}
+            {playButton}
         </svg>
     )
 }

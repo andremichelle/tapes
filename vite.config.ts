@@ -1,10 +1,9 @@
 import {readFileSync} from "fs"
 import {resolve} from "path"
 import {defineConfig} from "vite"
-import crossOriginIsolation from "vite-plugin-cross-origin-isolation"
 import viteCompression from "vite-plugin-compression"
 
-export default defineConfig(({command}) => {
+export default defineConfig(({}) => {
     return {
         resolve: {
             alias: {
@@ -22,18 +21,9 @@ export default defineConfig(({command}) => {
         clearScreen: false,
         server: {
             port: 8081,
-            host: "localhost",
-            headers: {
-                "Cross-Origin-Opener-Policy": "same-origin",
-                "Cross-Origin-Embedder-Policy": "require-corp"
-            },
-            fs: {
-                // Allow serving files from the entire workspace
-                allow: [".."]
-            }
+            host: "localhost"
         },
         plugins: [
-            crossOriginIsolation(),
             viteCompression({
                 algorithm: "brotliCompress"
             }),

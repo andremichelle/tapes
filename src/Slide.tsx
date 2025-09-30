@@ -1,6 +1,6 @@
 import css from "./Slide.sass?inline"
-import {AnimationFrame, Html} from "@opendaw/lib-dom"
-import {DefaultObservableValue, Lifecycle} from "@opendaw/lib-std"
+import {Html} from "@opendaw/lib-dom"
+import {Lifecycle} from "@opendaw/lib-std"
 import {createElement} from "@opendaw/lib-jsx"
 import {Tape} from "./Tape"
 import {TapeData} from "./TapeData"
@@ -10,17 +10,17 @@ const className = Html.adoptStyleSheet(css, "Slide")
 type Construct = {
     lifecycle: Lifecycle
     data: TapeData
+    audio: HTMLAudioElement
 }
 
-export const Slide = ({lifecycle, data}: Construct) => {
-    const position = new DefaultObservableValue(0.0)
-    AnimationFrame.add(() => position.setValue(performance.now() / 1000.0))
+export const Slide = ({lifecycle, data, audio}: Construct) => {
     return (
         <div className={className}>
             <h1>{data.name}</h1>
             <h2>{data.date}</h2>
-            <Tape lifecycle={lifecycle} position={position}/>
+            <Tape lifecycle={lifecycle} audio={audio} data={data}/>
             <p>{data.description}</p>
+            {audio}
         </div>
     )
 }

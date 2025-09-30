@@ -3,4 +3,5 @@ export interface TapeData {
     date: string
     description: string
     audio: URL
+    duration: number
 }
