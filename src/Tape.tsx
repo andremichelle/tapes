@@ -12,20 +12,20 @@ const tapeSpeedInCmPerSecond = 4.76
 const tapeVelocity = cassetteWidthInPixels / tapeSpeedInCmPerSecond / cassetteWidthInCm
 const radiusEmpty = 15
 const radiusFull = 38
-const stroke = "var(--color-dark)"
+const stroke = "var(--color-gray)"
 const mapping = ValueMapping.linear(radiusEmpty, radiusFull)
 const reels: ReadonlyArray<Circle> = [{x: 56, y: 44, r: 0}, {x: 152, y: 44, r: 0}]
 const pins: ReadonlyArray<Readonly<Circle>> = [{x: 8, y: 104, r: 6}, {x: 200, y: 104, r: 6}]
 const tapePath = [reels[0], pins[0], pins[1], reels[1]]
 const tapeReelHub = (): SVGPathElement => (
     <g>
-        <line x1={+mapping.y(0.4)} x2={+mapping.y(0.6)} stroke="rgba(255, 255, 255, 0.125)"
+        <line x1={+mapping.y(0.3)} x2={+mapping.y(0.7)} stroke="hsl(197, 14%, 9%)"
               stroke-width={4}
               stroke-linecap="round"/>
-        <line x1={-mapping.y(0.4)} x2={-mapping.y(0.6)} stroke="rgba(255, 255, 255, 0.125)"
+        <line x1={-mapping.y(0.3)} x2={-mapping.y(0.7)} stroke="hsl(197, 14%, 9%)"
               stroke-width={4}
               stroke-linecap="round"/>
-        <path fill="none" stroke={"var(--color-green)"} transform="translate(-10.4 -11.979)"
+        <path fill="none" stroke="currentColor" transform="translate(-10.4 -11.979)"
               d="M4.75,17.657C2.414,18.046 0.202,18.32 0.017,18C-0.167,17.68 1.168,15.91 2.669,14.086C2.486,13.415 2.388,12.708 2.388,11.979C2.388,8.263 4.922,5.135 8.355,4.23C9.182,2.028 10.042,0 10.409,0C10.778,0 11.64,2.031 12.467,4.236C15.889,5.148 18.413,8.271 18.413,11.979C18.413,12.702 18.317,13.404 18.136,14.07C19.642,15.9 20.986,17.68 20.802,18C20.616,18.321 18.395,18.046 16.053,17.655C14.604,19.098 12.605,19.991 10.4,19.991C8.196,19.991 6.199,19.099 4.75,17.657Z"/>
     </g>
 )
@@ -124,7 +124,7 @@ export const Tape = ({lifecycle, audio, data}: Construct) => {
                                 fill="none"
                                 stroke="hsl(200, 9%, 20%)"
                                 stroke-width={(radiusFull - radiusEmpty + 1)}/>
-                        <circle cx={reel.x} cy={reel.y} r={radiusEmpty} fill="none" stroke={"var(--color-blue)"}/>
+                        <circle cx={reel.x} cy={reel.y} r={radiusEmpty} fill="none" stroke="currentColor"/>
                         {background}
                     </Frag>
                 )

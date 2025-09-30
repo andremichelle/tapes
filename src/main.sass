@@ -15,23 +15,45 @@ html, body
   fill: white
   color: var(--color-cream)
   touch-action: none
-  overflow: hidden auto
+  overflow: hidden scroll
   scroll-snap-type: y mandatory
   background-color: hsl(197, 14%, 9%)
+
+.buttons
+  padding: 0.5em
+  top: 0
+  position: sticky
+  display: flex
+  flex-direction: row
+  align-items: center
+  column-gap: 0.5em
+  font-size: 1.25vw
+
+  > svg
+    aspect-ratio: 1 / 1
+
+  > button
+    font-size: inherit
+    font-family: inherit
+    padding: 0.25em 0.5em
+    appearance: none
+    background: rgba(black, 0.25)
+    border: none
+    border-radius: 1px
+    cursor: pointer
+
+    &.playing:before
+      content: "🔊"
+      margin-right: 0.25em
 
 p
   line-height: 1.5em
 
 h1
-  font-size: 10vw
-  color: var(--color-blue)
+  font-size: 6vw
 
 h2
-  font-size: 2vw
-  color: var(--color-green)
-
-h3
-  color: var(--color-cream)
+  font-size: 1.5vw
 
 h1, h2, h3, h4, h5
   margin: 0

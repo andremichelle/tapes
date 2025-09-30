@@ -10,12 +10,13 @@ const className = Html.adoptStyleSheet(css, "Slide")
 type Construct = {
     lifecycle: Lifecycle
     data: TapeData
+    color: string
     audio: HTMLAudioElement
 }
 
-export const Slide = ({lifecycle, data, audio}: Construct) => {
+export const Slide = ({lifecycle, data, color, audio}: Construct) => {
     return (
-        <div className={className}>
+        <div className={className} style={{"--color": color}}>
             <h1>{data.name}</h1>
             <h2>{data.date}</h2>
             <Tape lifecycle={lifecycle} audio={audio} data={data}/>

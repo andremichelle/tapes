@@ -3,22 +3,18 @@ component
   flex: 0 0 100vh
   width: 100vw
   height: 100vh
-  padding: 3vw
+  padding: 8vw
   overflow: hidden
   display: flex
   flex-direction: column
   align-items: center
   justify-content: center
-
-  h1
-    filter: drop-shadow(0 0 8vw var(--color-blue))
-
-  h2
-    filter: drop-shadow(0 0 4vw var(--color-green))
+  --color: var(--color-purple)
+  color: var(--color)
 
   p
     text-align: justify
     color: transparent
-    background: linear-gradient(90deg, var(--color-blue), var(--color-green))
+    background: linear-gradient(90deg, var(--color), var(--color-gray))
     -webkit-background-clip: text
     background-clip: text
