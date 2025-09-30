@@ -52,11 +52,9 @@ const TapesData: ReadonlyArray<TapeData> = [{
             if (isInstanceOf(event.target, HTMLAudioElement)) {
                 audioElements.forEach((audio, index) => {
                     if (event.target === audio) {
-                        console.debug("playing", index)
                         buttons[index].classList.add("playing")
                         slides[index].scrollIntoView({behavior: "smooth"})
                     } else {
-                        console.debug("not playing", index)
                         buttons[index].classList.remove("playing")
                         audio.pause()
                     }
