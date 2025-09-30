@@ -48,7 +48,6 @@ const TapesData: ReadonlyArray<TapeData> = [{
             </button>
         ))
         lifecycle.own(Events.subscribe(window, "play", (event: Event) => {
-            console.debug(event.target)
             if (isInstanceOf(event.target, HTMLAudioElement)) {
                 audioElements.forEach((audio, index) => {
                     if (event.target === audio) {
