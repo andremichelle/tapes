@@ -10,7 +10,7 @@ window.name = "main"
 const TapesData: ReadonlyArray<TapeData> = [{
         name: "Port",
         date: "July, 31st 2025",
-        description: "Mostly driving noises. Just delicious crispy tracks.",
+        description: "Mostly driving noises. Just delicious crisp tracks.",
         audio: new URL("https://www.andremichelle.io/files/mixes/Port.mp3"),
         duration: 5093.904375
     }, {
