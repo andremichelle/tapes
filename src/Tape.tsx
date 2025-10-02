@@ -129,8 +129,8 @@ export const Tape = ({lifecycle, audio, data}: Construct) => {
                     </Frag>
                 )
             })}
-            {reelElements}
             {reelHubs}
+            {reelElements}
             {pins.map(({x, y, r}) => (<circle cx={x} cy={y} r={r} fill="none" stroke={stroke}/>))}
             {head}
             {tape}
