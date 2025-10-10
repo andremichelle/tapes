@@ -8,6 +8,12 @@ import {TapeData} from "./TapeData"
 window.name = "main"
 
 const TapesData: ReadonlyArray<TapeData> = [{
+        name: "Distant",
+        date: "Oct, 10st 2025",
+        description: "Distant, Pulsing, Psychotropic",
+        audio: new URL("https://www.andremichelle.io/files/mixes/Distant.mp3"),
+        duration: 3722.331
+    },{
         name: "Port",
         date: "July, 31st 2025",
         description: "Mostly driving noises. Just delicious crisp tracks.",
