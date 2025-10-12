@@ -10,7 +10,7 @@ window.name = "main"
 const TapesData: ReadonlyArray<TapeData> = [{
         name: "Distant",
         date: "Oct, 10st 2025",
-        description: "Distant, Pulsing, Psychotropic",
+        description: "Addicted-2-Bass / Episode 144",
         audio: new URL("https://www.andremichelle.io/files/mixes/Distant.mp3"),
         duration: 3722.331
     },{

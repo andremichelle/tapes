@@ -1,7 +1,7 @@
 @use "@/colors"
 
 html, body
-  font-size: 16px
+  font-size: 1.5vmin
   font-family: Rubik, sans-serif
   font-variant-numeric: tabular-nums
   text-rendering: optimizeLegibility
@@ -14,28 +14,24 @@ html, body
   position: relative
   fill: white
   color: var(--color-cream)
-  touch-action: none
   overflow: hidden scroll
   scroll-snap-type: y mandatory
   background-color: hsl(197, 14%, 9%)
 
 .buttons
-  padding: 0.5em
+  padding: 1em
   top: 0
   position: sticky
   display: flex
   flex-direction: row
   align-items: center
-  column-gap: 0.5em
-  font-size: 1.25vw
-
-  > svg
-    aspect-ratio: 1 / 1
+  column-gap: 0.5vmin
+  font-size: 2.5vmin
 
   > button
     font-size: inherit
     font-family: inherit
-    padding: 0.25em 0.5em
+    padding: 0.25vmin 0.5vmin
     appearance: none
     background: rgba(black, 0.25)
     border: none
@@ -44,16 +40,13 @@ html, body
 
     &.playing:before
       content: "🔊"
-      margin-right: 0.25em
-
-p
-  line-height: 1.5em
+      margin-right: 0.25vmin
 
 h1
-  font-size: 6vw
+  font-size: 10vmin
 
 h2
-  font-size: 1.5vw
+  font-size: 2.5vmin
 
 h1, h2, h3, h4, h5
   margin: 0
