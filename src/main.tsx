@@ -8,26 +8,32 @@ import {TapeData} from "./TapeData"
 window.name = "main"
 
 const TapesData: ReadonlyArray<TapeData> = [{
+        name: "Dub Lab",
+        date: "Nov, 1st 2025",
+        description: "Sub-sonic basslines and drifting echoes",
+        audio: new URL("https://www.andremichelle.io/files/mixes/DubLab.mp3"),
+        duration: 2663.756
+    }, {
         name: "Distant",
-        date: "Oct, 10st 2025",
+        date: "Oct, 10th 2025",
         description: "Addicted-2-Bass / Episode 144",
         audio: new URL("https://www.andremichelle.io/files/mixes/Distant.mp3"),
         duration: 3722.331
-    },{
+    }, {
         name: "Port",
-        date: "July, 31st 2025",
+        date: "July, 31th 2025",
         description: "Mostly driving noises. Just delicious crisp tracks.",
         audio: new URL("https://www.andremichelle.io/files/mixes/Port.mp3"),
         duration: 5093.904375
     }, {
         name: "Deep Space Radio I",
-        date: "May, 21st 2025",
+        date: "May, 21th 2025",
         description: "Addicted-2-Bass / Episode 109",
         audio: new URL("https://www.andremichelle.io/files/mixes/DeepSpaceRadio.mp3"),
         duration: 3600
     }, {
         name: "Meadow",
-        date: "May, 21st 2025",
+        date: "May, 21th 2025",
         description: "Melodic techno, lush textures.",
         audio: new URL("https://www.andremichelle.io/files/mixes/Meadow.mp3"),
         duration: 3726.72
