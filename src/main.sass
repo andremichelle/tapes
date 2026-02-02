@@ -16,7 +16,7 @@ html, body
   color: var(--color-cream)
   overflow: hidden scroll
   scroll-snap-type: y mandatory
-  background-color: hsl(197, 14%, 9%)
+  background: linear-gradient(to bottom, hsl(197, 14%, 6%) 33%, hsl(197, 14%, 8%) 66%)
 
 .plus-button
   position: fixed
@@ -28,13 +28,13 @@ html, body
   padding: 0
   appearance: none
   background: rgba(black, 0.25)
-  border: 1px solid var(--color-purple)
+  border: 2px solid var(--color-cream)
   border-radius: 50%
   cursor: pointer
   display: flex
   align-items: center
   justify-content: center
-  color: var(--color-purple)
+  color: var(--color-cream)
   transition: transform 0.2s ease
 
   &:hover
@@ -63,7 +63,7 @@ html, body
   left: 0
   bottom: 0
   z-index: 95
-  width: 16em
+  width: fit-content
   padding: calc(3vmin + max(5vmin, 44px) + 3vmin) 1.5em 2em
   background: hsl(197, 14%, 6%)
   border-right: 1px solid rgba(white, 0.1)
@@ -86,6 +86,7 @@ html, body
     border-radius: 4px
     cursor: pointer
     text-align: left
+    white-space: nowrap
     transition: background 0.2s ease
 
     &:hover
