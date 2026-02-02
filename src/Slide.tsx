@@ -3,13 +3,13 @@ import {Html} from "@opendaw/lib-dom"
 import {Lifecycle} from "@opendaw/lib-std"
 import {createElement} from "@opendaw/lib-jsx"
 import {Tape} from "./Tape"
-import {TapeData} from "./TapeData"
+import {TapeJson} from "./TapeJson"
 
 const className = Html.adoptStyleSheet(css, "Slide")
 
 type Construct = {
     lifecycle: Lifecycle
-    data: TapeData
+    data: TapeJson
     color: string
     audio: HTMLAudioElement
 }

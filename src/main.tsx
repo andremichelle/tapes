@@ -3,7 +3,7 @@ import {Arrays, isInstanceOf, Terminator} from "@opendaw/lib-std"
 import {createElement, Frag, replaceChildren} from "@opendaw/lib-jsx"
 import {AnimationFrame, Events} from "@opendaw/lib-dom"
 import {Slide} from "./Slide"
-import {TapeData} from "./TapeData"
+import {TapeJson} from "./TapeJson"
 
 window.name = "main"
 
@@ -13,7 +13,7 @@ window.name = "main"
         console.debug("booted")
         const lifecycle = new Terminator()
         const colors = ["var(--color-blue)", "var(--color-purple)", "var(--color-green)"]
-        const TapesData: ReadonlyArray<TapeData> = await fetch(`./mixes.json?v=${Date.now()}`)
+        const TapesData: ReadonlyArray<TapeJson> = await fetch(`./mixes.json?v=${Date.now()}`)
             .then(response => response.json())
         const audioElements = TapesData.map(data => (
             <audio src={data.audio.toString()} crossOrigin="true"/>))

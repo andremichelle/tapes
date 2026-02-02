@@ -1,28 +1,29 @@
 import css from "./Tape.sass?inline"
-import {Arrays, Circle, clamp, Geom, Lifecycle, ValueMapping} from "@opendaw/lib-std"
+import {Arrays, Circle, clamp, Geom, Lifecycle} from "@opendaw/lib-std"
 import {createElement, Frag} from "@opendaw/lib-jsx"
 import {AnimationFrame, Events, Html} from "@opendaw/lib-dom"
-import {TapeData} from "./TapeData"
+import {TapeJson} from "./TapeJson"
 
 const className = Html.adoptStyleSheet(css, "Tape")
 
-const cassetteWidthInCm = 10
-const cassetteWidthInPixels = 208
-const tapeSpeedInCmPerSecond = 4.76
-const tapeVelocity = cassetteWidthInPixels / tapeSpeedInCmPerSecond / cassetteWidthInCm
-const radiusEmpty = 15
-const radiusFull = 38
+// Compact Cassette (Philips standard): hub ⌀21.5mm, full reel ⌀52mm, tape speed 4.76 cm/s
+const radiusEmpty = 15  // scaled from 10.75mm
+const radiusFull = 38   // scaled from 26mm
+const tapeVelocity = 47.6 * (radiusEmpty / 10.75) // 4.76 cm/s scaled to match radii
+const radiusEmptySq = radiusEmpty * radiusEmpty
+const radiusDiffSq = radiusFull * radiusFull - radiusEmptySq
 const stroke = "var(--color-gray)"
-const mapping = ValueMapping.linear(radiusEmpty, radiusFull)
 const reels: ReadonlyArray<Circle> = [{x: 56, y: 44, r: 0}, {x: 152, y: 44, r: 0}]
 const pins: ReadonlyArray<Readonly<Circle>> = [{x: 8, y: 104, r: 6}, {x: 200, y: 104, r: 6}]
 const tapePath = [reels[0], pins[0], pins[1], reels[1]]
+const hubLineInner = radiusEmpty + 0.3 * (radiusFull - radiusEmpty)
+const hubLineOuter = radiusEmpty + 0.7 * (radiusFull - radiusEmpty)
 const tapeReelHub = (): SVGPathElement => (
     <g>
-        <line x1={+mapping.y(0.3)} x2={+mapping.y(0.7)} stroke="hsl(197, 14%, 9%)"
+        <line x1={+hubLineInner} x2={+hubLineOuter} stroke="hsl(197, 14%, 9%)"
               stroke-width={4}
               stroke-linecap="round"/>
-        <line x1={-mapping.y(0.3)} x2={-mapping.y(0.7)} stroke="hsl(197, 14%, 9%)"
+        <line x1={-hubLineInner} x2={-hubLineOuter} stroke="hsl(197, 14%, 9%)"
               stroke-width={4}
               stroke-linecap="round"/>
         <path fill="none" stroke="currentColor" transform="translate(-10.4 -11.979)"
@@ -32,7 +33,7 @@ const tapeReelHub = (): SVGPathElement => (
 
 export type Construct = {
     lifecycle: Lifecycle
-    data: TapeData
+    data: TapeJson
     audio: HTMLAudioElement
 }
 
@@ -44,24 +45,26 @@ export const Tape = ({lifecycle, audio, data}: Construct) => {
         <rect x={100} y={106} width={8} height={2} stroke="none" fill="var(--color-dark)"/>
     )
     const tape: ReadonlyArray<SVGLineElement> = Arrays.create(() => <line stroke={stroke}/>, 3)
-    const total = data.duration
-    const angles = [0.0, 0.0]
-    let lastTime = 0.0
-    let delta = 0.0
+    const duration = data.duration
+    // Precompute constant: k = 2vT / (r_full² - r₀²) converted to degrees
+    const k = (2 * tapeVelocity * duration / radiusDiffSq) * (180 / Math.PI)
     const observer = () => {
-        const position = audio.currentTime
-        const elapsed = position - lastTime
-        delta += elapsed
-        const ratio = clamp(delta / total, 0.0, 1.0)
-        const ratios = [1.0 - ratio, ratio]
-        for (let i = 0; i < 2; i++) {
-            const reel = reels[i]
-            const radius = mapping.y(ratios[i])
-            angles[i] += (elapsed * 360) * (tapeVelocity / radius)
-            reelHubs[i].setAttribute("transform",
-                `translate(${reel.x}, ${reel.y}) rotate(${-angles[i] + i * 60.0})`)
-            reelElements[i].r.baseVal.value = reel.r = radius
-        }
+        const ratio = clamp(audio.currentTime / duration, 0.0, 1.0)
+        // Radii from physics: r = √(r₀² + x(r_full² - r₀²))
+        const radiusLeft = Math.sqrt(radiusEmptySq + (1 - ratio) * radiusDiffSq)
+        const radiusRight = Math.sqrt(radiusEmptySq + ratio * radiusDiffSq)
+        // Angles from integration: θ = k × (r - r₀) or k × (r_full - r)
+        const angleLeft = k * (radiusFull - radiusLeft)
+        const angleRight = k * (radiusRight - radiusEmpty)
+        // Update left reel
+        reelHubs[0].setAttribute("transform",
+            `translate(${reels[0].x}, ${reels[0].y}) rotate(${-angleLeft})`)
+        reelElements[0].r.baseVal.value = reels[0].r = radiusLeft
+        // Update right reel
+        reelHubs[1].setAttribute("transform",
+            `translate(${reels[1].x}, ${reels[1].y}) rotate(${-angleRight + 60.0})`)
+        reelElements[1].r.baseVal.value = reels[1].r = radiusRight
+        // Update tape path
         for (let i = 0; i < tapePath.length - 1; i++) {
             const [a, b] = Geom.outerTangentPoints(tapePath[i], tapePath[i + 1])
             const {x1, y1, x2, y2} = tape[i]
@@ -70,7 +73,6 @@ export const Tape = ({lifecycle, audio, data}: Construct) => {
             x2.baseVal.value = b.x
             y2.baseVal.value = b.y
         }
-        lastTime = position
     }
     observer()
     const playButton: SVGSVGElement = (
@@ -112,7 +114,7 @@ export const Tape = ({lifecycle, audio, data}: Construct) => {
                     const dy = clientY - (y + width / 2)
                     const dd = Math.sqrt(dx * dx + dy * dy)
                     const ratio = (dd / scale - radiusEmpty) / (radiusFull - radiusEmpty)
-                    audio.currentTime = clamp(ratio, 0.0, 1.0) * total
+                    audio.currentTime = clamp(ratio, 0.0, 1.0) * duration
                 }
                 lifecycle.ownAll(
                     Events.subscribe(background, "pointerdown", listener),

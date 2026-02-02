@@ -1,4 +1,4 @@
-export interface TapeData {
+export interface TapeJson {
     name: string
     date: string
     description: string
