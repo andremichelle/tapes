@@ -18,32 +18,85 @@ html, body
   scroll-snap-type: y mandatory
   background-color: hsl(197, 14%, 9%)
 
-.buttons
-  padding: 1em
-  top: 0
-  position: sticky
+.plus-button
+  position: fixed
+  top: 3vmin
+  left: 3vmin
+  z-index: 100
+  width: max(5vmin, 44px)
+  height: max(5vmin, 44px)
+  padding: 0
+  appearance: none
+  background: rgba(black, 0.25)
+  border: 1px solid var(--color-purple)
+  border-radius: 50%
+  cursor: pointer
   display: flex
-  flex-direction: row
   align-items: center
-  column-gap: 0.5vmin
-  font-size: 2.5vmin
+  justify-content: center
+  color: var(--color-purple)
+  transition: transform 0.2s ease
+
+  &:hover
+    transform: scale(1.1)
+
+  > svg
+    width: 1.5em
+    height: 1.5em
+
+.menu-backdrop
+  position: fixed
+  inset: 0
+  z-index: 90
+  background: rgba(black, 0.5)
+  opacity: 0
+  pointer-events: none
+  transition: opacity 0.3s ease
+
+  &.open
+    opacity: 1
+    pointer-events: all
+
+.tape-menu
+  position: fixed
+  top: 0
+  left: 0
+  bottom: 0
+  z-index: 95
+  width: 16em
+  padding: calc(3vmin + max(5vmin, 44px) + 3vmin) 1.5em 2em
+  background: hsl(197, 14%, 6%)
+  border-right: 1px solid rgba(white, 0.1)
+  display: flex
+  flex-direction: column
+  gap: 0.5em
+  transform: translateX(-100%)
+  transition: transform 0.3s ease
+
+  &.open
+    transform: translateX(0)
 
   > button
-    font-size: inherit
+    font-size: 2.5vmin
     font-family: inherit
-    padding: 0.25vmin 0.5vmin
+    padding: 0.75em 1em
     appearance: none
-    background: rgba(black, 0.25)
+    background: rgba(white, 0.05)
     border: none
-    border-radius: 1px
+    border-radius: 4px
     cursor: pointer
+    text-align: left
+    transition: background 0.2s ease
+
+    &:hover
+      background: rgba(white, 0.1)
 
     &.playing:before
       content: "🔊"
-      margin-right: 0.25vmin
+      margin-right: 0.5em
 
 h1
-  font-size: 10vmin
+  font-size: 8vmin
 
 h2
   font-size: 2.5vmin
