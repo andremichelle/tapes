@@ -4,6 +4,7 @@ import {createElement, Frag, replaceChildren} from "@opendaw/lib-jsx"
 import {AnimationFrame, Events} from "@opendaw/lib-dom"
 import {Slide} from "./Slide"
 import {TapeJson} from "./TapeJson"
+import {Router} from "./Router"
 
 window.name = "main"
 
@@ -19,7 +20,7 @@ window.name = "main"
             "var(--color-orange)",
             "var(--color-red)",
             "var(--color-yellow)"]
-        const TapesData: ReadonlyArray<TapeJson> = await fetch(`./mixes.json?v=${Date.now()}`)
+        const TapesData: ReadonlyArray<TapeJson> = await fetch(`/mixes.json?v=${Date.now()}`)
             .then(response => response.json())
         const audioElements = TapesData.map(data => (
             <audio src={data.audio.toString()} crossOrigin="true"/>))
@@ -89,5 +90,27 @@ window.name = "main"
                 {slides}
             </Frag>
         ))
+
+        const router = new Router(TapesData.map(({name}) => name))
+        const initialIndex = router.resolve()
+        if (initialIndex >= 0) {
+            slides[initialIndex].scrollIntoView({behavior: "instant"})
+        }
+        router.replace(Math.max(0, initialIndex))
+        const intersectionObserver = new IntersectionObserver(entries => entries
+            .filter(entry => entry.isIntersecting)
+            .forEach(entry => router.replace(slides.indexOf(entry.target as HTMLElement))), {threshold: 0.5})
+        slides.forEach(slide => intersectionObserver.observe(slide))
+        lifecycle.own({terminate: () => intersectionObserver.disconnect()})
+        lifecycle.own(Events.subscribe(window, "keydown", (event: KeyboardEvent) => {
+            if (event.code !== "Space" || event.repeat || event.metaKey || event.ctrlKey || event.altKey) {return}
+            event.preventDefault()
+            const playing = audioElements.find(audio => !audio.paused)
+            if (playing !== undefined) {
+                playing.pause()
+            } else if (router.current >= 0) {
+                audioElements[router.current].play().then()
+            }
+        }))
     }
 )()
